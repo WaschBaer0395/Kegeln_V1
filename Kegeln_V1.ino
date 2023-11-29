@@ -17,7 +17,7 @@ Wifi_Manager_Class          wifi_manager;
 Lcd_Display_Class           lcd_display;
 
 //_____Pin definitons for sensors
-const byte Sensor_Round = 15; 
+const byte Sensor_Round = 21; 
 const byte Sensor_1 = 14;
 const byte Sensor_2 = 2;
 const byte Sensor_3 = 3;
@@ -50,7 +50,7 @@ void setup() {
   wifi_manager.SETUP_MQTT_CONNECTION(&lcd_display);
   
   //_____Defining Pinmodes for connected Sensors
-  pinMode(Sensor_Round, INPUT_PULLUP);
+  pinMode(Sensor_Round, INPUT);
   pinMode(Sensor_1, INPUT_PULLUP);
   pinMode(Sensor_2, INPUT_PULLUP);
   pinMode(Sensor_3, INPUT_PULLUP);
@@ -92,8 +92,8 @@ void loop() {
 
 
   
-    //Status row
-  lcd_display.CenterPrint("Down: " + String(down) + " Up: " + String(up),0);
+  //Status row
+  lcd_display.CenterPrint("Do :" + String(down) + " Up :" + String(up) + " Ro :" + (bool)digitalRead(Sensor_Round),0);
   // Row 5 Consisting of Pin 9 
   lcd_display.CenterPrint(String(convertStateToChar(pins[8])),15);
   // Row 4 Consisting of Pin 7 and 8
