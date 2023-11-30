@@ -3,8 +3,8 @@
 #define lcd_display_h
 
 // Others
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define SCREEN_WIDTH 128 //128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 //64 // OLED display height, in pixels
 
 //----- Includes ---------------------------------------------------------------------------------------
 //Local Headers:
@@ -13,7 +13,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>
-#include <Adafruit_SH110X.h>
+#include <Adafruit_ST7735.h>
 
 //------------------------------------------------------------------------------------------------------
 

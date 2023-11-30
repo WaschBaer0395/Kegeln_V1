@@ -42,6 +42,10 @@ void setup() {
   //_____ Arduino functions ________________________________
   Serial.begin(9600);
 
+      lcd_display.initR(INITR_HALLOWING);        // Initialize HalloWing-oriented screen
+      //pinMode(TFT_BACKLIGHT, OUTPUT);
+      //digitalWrite(TFT_BACKLIGHT, HIGH);
+
   //____Check if WiFi Available______
 
   //INITIALIZE_WIFI_COMMUNICATION(&lcd_display, &wifi_manager);

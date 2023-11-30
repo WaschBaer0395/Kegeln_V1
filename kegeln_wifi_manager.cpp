@@ -41,7 +41,7 @@
 
             // WLAN Client
 
-  const char* mqttServer = "192.168.178.17"; // IP MQTT Broker
+  const char* mqttServer = "10.40.72.110"; // IP MQTT Broker
 
   int number_of_tries = 0;                 // Counter for number of connection attempts
   int max_number_of_tries = 3;
@@ -177,7 +177,7 @@ void Wifi_Manager_Class::SETUP_MQTT_CONNECTION(Lcd_Display_Class* lcd_ini) {
       if(mqttClient.connect("ArduinoClient")){      // Sets up connection to broker
         mqttClient.setCallback(this->subscribeReceive);   // Assign Event Handler/Callback function
         
-        mqttClient.subscribe("kegelbahn", 1);
+        mqttClient.subscribe("Kegelbahn/Player", 1);
         
         lcd_ini->Clear();
         lcd_ini->PRINT("MQTT Connected!");
