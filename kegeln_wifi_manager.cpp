@@ -41,7 +41,7 @@
 
             // WLAN Client
 
-  const char* mqttServer = "10.40.72.110"; // IP MQTT Broker
+  const char* mqttServer = "192.168.178.17"; // IP MQTT Broker
 
   int number_of_tries = 0;                 // Counter for number of connection attempts
   int max_number_of_tries = 3;
@@ -82,68 +82,71 @@ void Wifi_Manager_Class::SETUP_WIFI_CONNECTION(Lcd_Display_Class* lcd_ini) {
     //Read WiFi Info from SD Card:
     //First Connecting Attempt:
     
-    Serial.println("First Connecting Attempt:");
+    lcd_ini->PRINT_BUFFERED("First Attempt:");
     if(accessPoint.CHECK_SD()){
-      Serial.println("  SD Module found\n   Reading SD Card:");
-      lcd_ini->Clear();
-      lcd_ini->PRINT(0,0,"SD Module found\nReading SD Card:");
+      //Serial.println("  SD Module found\n   Reading SD Card:");
+      //lcd_ini->Clear();
+      lcd_ini->PRINT_BUFFERED("SD Module found");
+      lcd_ini->PRINT_BUFFERED("Reading SD Card:");
       accessPoint.SD_READ(ssid, pass);
 
       if(strcmp(ssid, "SSID") != 0 ){
-        Serial.println("    SD Read Success");
-        lcd_ini->PRINT(0,9,"SD Read Success");
+        //Serial.println("    SD Read Success");
+        lcd_ini->PRINT_BUFFERED("SD Read Success");
       }
-      Serial.println("    Status: " + String(status));
+      //Serial.println("    Status: " + String(status));
       status = WiFi.begin(ssid, pass);
       
     }
     //One Time Connection
     else{
-      Serial.println("  SD Module not found");
+      //Serial.println("  SD Module not found");
       accessPoint.OPEN_AP(ssid_ap, password_ap);
-      lcd_ini->Clear();
-      lcd_ini->PRINT("SD Module not found \nTrying temporal connection: \nUse 192.168.4.1");
+      //lcd_ini->Clear();
+      lcd_ini->PRINT_BUFFERED("SD Module not found");
+      lcd_ini->PRINT_BUFFERED("Creating AP");
+      lcd_ini->PRINT_BUFFERED("Connect: 192.168.4.1");
       Serial.println(ssid_ap);
       Serial.println(password_ap);
       while(strcmp(ssid, "SSID") == 0){
         accessPoint.HANDLE_AP(ssid, pass);
       }
       status = WiFi.begin(ssid, pass);
-      Serial.println(status);
+      //Serial.println(status);
     }
-    lcd_ini->Clear();
-    lcd_ini->PRINT(
-      "S: " + String(ssid) + "\n" + 
-      "P: " + String(pass) + "\n");
-    Serial.println(
-      " S: " + String(ssid) + "\n" + 
-      " P: " + String(pass) + "\n"); 
+    //lcd_ini->Clear();
+    lcd_ini->PRINT_BUFFERED("S: " + String(ssid)); 
+    lcd_ini->PRINT_BUFFERED("P: " + String(pass));
+    //Serial.println(
+    //  " S: " + String(ssid) + "\n" + 
+    //  " P: " + String(pass) + "\n"); 
     while (status != WL_CONNECTED && number_of_tries < max_number_of_tries) {
       number_of_tries++;
-      lcd_ini->PRINT(0,18,
-        "Try NR. " + String(number_of_tries) + "\n" +
-        "STATUS: " + String(status));
-      Serial.println(
-        "-------------------------------------\n"
-        "-- Try NR. " + String(number_of_tries) + "\n" +
-        "-- STATUS: " + String(status) + 
-        "\n-------------------------------------");
+      lcd_ini->PRINT_BUFFERED(" ");
+      lcd_ini->PRINT_BUFFERED("Try NR. " + String(number_of_tries));
+      lcd_ini->PRINT_BUFFERED("STATUS: " + String(status));
+      //Serial.println(
+      //  "\n"
+      //  "-- Try NR. " + String(number_of_tries) + "\n" +
+      //  "-- STATUS: " + String(status));
       status = WiFi.begin(ssid, pass);
-      delay(10000);
+      delay(5000);
     }
 
     if(status == WL_CONNECTED){
-      Serial.println("  connected!");
-      lcd_ini->Clear();         
-      lcd_ini->PRINT("WLAN Connected!");
+      //Serial.println("  connected!");
+      //lcd_ini->Clear();         
+      lcd_ini->PRINT_BUFFERED("WLAN Connected!");
       number_of_tries = 0; // Either here or just before if-clause
     }
     //Second Attempt:
     else{
-      lcd_ini->Clear();
-      lcd_ini->PRINT("WLAN Failed! \nCreating Access Point...");
+      //lcd_ini->Clear();
+      lcd_ini->PRINT_BUFFERED("WLAN Failed!");
+      lcd_ini->PRINT_BUFFERED("Creating Access Point...");
       accessPoint.OPEN_AP(ssid_ap, password_ap);
-      Serial.println("  WLAN Failed! \nCreated Access Point... \nUse 192.168.4.1");
+      lcd_ini->PRINT_BUFFERED("Use 192.168.4.1");
+      //Serial.println("  WLAN Failed! \nCreated Access Point... \nUse 192.168.4.1");
       char* tempS;
       char* tempP;
       int s = 0;
@@ -179,14 +182,14 @@ void Wifi_Manager_Class::SETUP_MQTT_CONNECTION(Lcd_Display_Class* lcd_ini) {
         
         mqttClient.subscribe("Kegelbahn/Player", 1);
         
-        lcd_ini->Clear();
-        lcd_ini->PRINT("MQTT Connected!");
-        Serial.println("MQTT Connected!");
+        //lcd_ini->Clear();
+        lcd_ini->PRINT_BUFFERED("MQTT Connected!");
+        //Serial.println("MQTT Connected!");
       }
       else{
-        lcd_ini->Clear();
-        lcd_ini->PRINT("MQTT Failed!");
-        Serial.println("MQTT Failed!");
+        //lcd_ini->Clear();
+        lcd_ini->PRINT_BUFFERED("MQTT Failed!");
+        //Serial.println("MQTT Failed!");
       }
 
       return;

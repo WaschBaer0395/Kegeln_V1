@@ -1,20 +1,25 @@
 //----- Includes ---------------------------------------------------------------------------------------
 //Local Headers:
 #include "kegeln_lcd_display.h"
+#include "splash_logo.cpp"
 //Arduino Librarys:
 #include <Arduino.h>
+
 //------------------------------------------------------------------------------------------------------
 
 //----- Classes: ---------------------------------------------------------------------------------------
-  //LiquidCrystal_I2C lcd(0x27, 20, 4);
+//LiquidCrystal_I2C lcd(0x27, 20, 4);
 //Adafruit_SH1106G lcd = Adafruit_SH1106G(128, 64, &Wire, -1);
 
-#define TFT_CS        17 // Hallowing display control pins: chip select
-#define TFT_RST       16 // Display reset
-#define TFT_DC        15 // Display data/command select
-#define TFT_BACKLIGHT  7 // Display backlight pin
+//RB-TFT1,8-T
+#define TFT_CS        15  // Display data/command select
+#define TFT_RST       16  // Or set to -1 and connect to Arduino RESET pin
+#define TFT_DC        17  // Hallowing display control pins: chip select
 
-Adafruit_ST7735 lcd = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+#define TFT_MOSI      18  // Data out
+#define TFT_SCLK      19  // Clock out
+
+Adafruit_ST7735 lcd = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 // color definitions
 const uint16_t  Display_Color_Black        = 0x0000;
@@ -27,25 +32,22 @@ const uint16_t  Display_Color_Yellow       = 0xFFE0;
 const uint16_t  Display_Color_White        = 0xFFFF;
 
 // The colors we actually want to use
-uint16_t        Display_Text_Color         = Display_Color_Black;
+uint16_t        Display_Text_Color         = Display_Color_Black;   
 uint16_t        Display_Backround_Color    = Display_Color_Blue;
+
+int last_line = 1;
+
 
 //------------------------------------------------------------------------------------------------------
 
 void Lcd_Display_Class::BEGIN () {  
-  delay(250); // Delay for OLED bootup
-  //lcd.initR(INITR_HALLOWING); // Sets up the link and displays a splash screen
-  //lcd.display(); // display function has to be called everytime something is drawn/written
+  lcd.initR(INITR_GREENTAB); // Sets up the link and displays a splash screen
+  lcd.fillScreen(ST77XX_BLACK);
+  lcd.drawBitmap(0,0,splash_logo,128,160, 0xFFFF); //SPLASH SCREEN
   delay(2000); // Duration of the splash screen, value chosen arbitrarily
-  lcd.setFont();
-  lcd.fillScreen(Display_Backround_Color);
-  lcd.setTextColor(Display_Text_Color);
-  lcd.setTextSize(1);
-  //lcd.clearDisplay();
-
-  //lcd.setTextSize(1); // Argument works as a multiplier (e.g. 1 = standard size, 2 = double size)
-  //lcd.setTextColor(SH110X_WHITE, SH110X_BLACK); // Monochrome OLED Display
-  //lcd.display(); //update display                //den Wert (0) eintragen
+  lcd.setCursor(0, 0);
+  lcd.setTextWrap(true);
+  lcd.fillScreen(ST77XX_BLACK);
 }
 
 
@@ -56,12 +58,18 @@ void Lcd_Display_Class::PRINT(String text) {
   lcd.print("                    ");
   lcd.setCursor(0, 0);
   lcd.print(text);
-  //lcd.display();
-  /*
-  delay(2000);
-  lcd.setCursor(0, 2);
-  lcd.print("                    ");
-  */
+}
+
+
+void Lcd_Display_Class::PRINT_BUFFERED(String text){
+  if (last_line == 16) {
+    last_line = 0;
+    Clear();
+  }
+  else last_line++;
+
+  lcd.setCursor(0, (last_line)*9);
+  lcd.print(text);
 }
 
 void Lcd_Display_Class::PRINT(const int row, const int line, String text) {
@@ -72,11 +80,15 @@ void Lcd_Display_Class::PRINT(const int row, const int line, String text) {
 }
 
 void Lcd_Display_Class::Clear() {
-  //lcd.clearDisplay();
+  lcd.fillScreen(ST77XX_BLACK);
 }
 
 void Lcd_Display_Class::Update() {
   //lcd.display();
+}
+
+void Lcd_Display_Class::drawPixel(int16_t x, int16_t y, uint16_t c){
+  lcd.drawPixel(x,y,c);
 }
 
 /*

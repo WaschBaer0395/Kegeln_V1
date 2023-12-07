@@ -55,7 +55,7 @@ String kegeln_access_point::URL_DECODE(String input) {
 void kegeln_access_point::HANDLE_AP(char* ssid, char* pass){
     WiFiClient client = server.available();
     if (client) {
-        Serial.println("Client connected");
+      Serial.println("Client connected");
     String currentLine = "";
 
     while (client.connected() || strcmp(ssid, "SSID") == 0) {
@@ -88,9 +88,7 @@ void kegeln_access_point::HANDLE_AP(char* ssid, char* pass){
               Serial.println("SSID: " + newSSID);
               Serial.println("PASS: " + newPassword);
               SAVE_VALUES(newSSID, newPassword);
-              Serial.println(ssid);
               strcpy(ssid,newSSID.c_str());
-              Serial.println(ssid);
               strcpy(pass, newPassword.c_str());
               client.stop();
             }
