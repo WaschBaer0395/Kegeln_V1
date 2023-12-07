@@ -9,7 +9,6 @@
 #include <Arduino.h>
 #include <WiFiNINA.h>
 #include <PubSubClient.h>
-#include <RTCZero.h>
 #include <ArduinoJson.h>
 //------------------------------------------------------------------------------------------------------
 
@@ -50,7 +49,6 @@
 
 //----- Classes: ---------------------------------------------------------------------------------------
   PubSubClient mqttClient(wifiClient);
-  RTCZero rtc;
   kegeln_access_point accessPoint;
   File wifiFile;
 //------------------------------------------------------------------------------------------------------
@@ -177,7 +175,7 @@ void Wifi_Manager_Class::SETUP_MQTT_CONNECTION(Lcd_Display_Class* lcd_ini) {
   if(status==WL_CONNECTED){
     mqttClient.setServer(mqttServer, 1883);
 
-      if(mqttClient.connect("ArduinoClient")){      // Sets up connection to broker
+      if(mqttClient.connect("Kegelbahn_Sensoren")){      // Sets up connection to broker
         mqttClient.setCallback(this->subscribeReceive);   // Assign Event Handler/Callback function
         
         mqttClient.subscribe("Kegelbahn/Player", 1);
@@ -210,46 +208,11 @@ String Wifi_Manager_Class::GET_CONNECTION_STATUS() {
 }
 
 
-void Wifi_Manager_Class::SETUP_RTC() {
-  if(status==WL_CONNECTED){
-      rtc.begin();
-      
-      int i = 0;
-      while (epoch == 0 && number_of_tries < max_number_of_tries) {
-        while (epoch == 0 && i<10) {
-          epoch = WiFi.getTime();
-          ++i;
-          delay(500);
-        }
-        number_of_tries++;
-      }
-
-      if (epoch != 0) {
-        rtc.setEpoch(epoch);
-        sprintf(time, "%02d:%02d:%02d", rtc.getHours() + GMT, rtc.getMinutes(), rtc.getSeconds());
-        sprintf(date, "%02d.%02d.%02d", rtc.getDay(), rtc.getMonth(), rtc.getYear()); 
-      }
-  }
-}
 
 
-String Wifi_Manager_Class::GET_CURRENT_TIME() {
-  sprintf(new_time, "%02d:%02d:%02d", rtc.getHours() + GMT, rtc.getMinutes(), rtc.getSeconds());
-  return new_time;
-}
-
-
-void Wifi_Manager_Class::SEND_MQTT_MESSAGE(const char* topic, struct data_struct data) {
-  DynamicJsonDocument JSONencoder (1024);  
-
-
-  JSONencoder["time_stamp"] = this->GET_CURRENT_TIME();
-
-
+void Wifi_Manager_Class::SEND_MQTT_MESSAGE(const char* topic, DynamicJsonDocument& JSONencoder) {
   char JSONmessageBuffer[300];  
-  
   serializeJson(JSONencoder, JSONmessageBuffer);
-  
   mqttClient.publish(topic, JSONmessageBuffer);
   
 }
