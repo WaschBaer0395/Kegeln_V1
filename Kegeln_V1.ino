@@ -110,7 +110,7 @@ if(sensors[0]){
   Serial.println("  Data is packed");
 
   Serial.println("  Sending data over MQTT TO: kegeln/bahn");
-  wifi_manager.SEND_MQTT_MESSAGE("Kegelbahn/Player", round);
+  wifi_manager.SEND_MQTT_MESSAGE("Kegelbahn/Kegel", round);
   Serial.println("  Data has been send");
   reset_pins_state();
 }
