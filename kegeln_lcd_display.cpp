@@ -12,9 +12,9 @@
 //Adafruit_SH1106G lcd = Adafruit_SH1106G(128, 64, &Wire, -1);
 
 //RB-TFT1,8-T
-#define TFT_CS        15  // Display data/command select
-#define TFT_RST       16  // Or set to -1 and connect to Arduino RESET pin
-#define TFT_DC        17  // Hallowing display control pins: chip select
+#define TFT_CS        17  // Display data/command select
+#define TFT_RST       -1  // Or set to -1 and connect to Arduino RESET pin
+#define TFT_DC        16  // Hallowing display control pins: chip select
 
 #define TFT_MOSI      18  // Data out
 #define TFT_SCLK      19  // Clock out
