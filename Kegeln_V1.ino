@@ -18,7 +18,7 @@ Wifi_Manager_Class wifi_manager;
 Lcd_Display_Class lcd_display;
 
 //_____Pin definitons for sensors
-const byte Sensor_Round = 15;
+const byte Sensor_Round = 21;
 const byte Sensor_1 = 14;
 const byte Sensor_2 = 2;
 const byte Sensor_3 = 3;
@@ -35,19 +35,19 @@ int rounds_played = 0;
 int pins_downed = 0;
 //
 
-bool sensors[10] = {
-  false,  // index 0 Round_over
-  true,   // index 1 Sensor_1 Pin standing
-  true,   // index 2 Sensor_2 Pin standing
-  true,   // index 3 Sensor_3 Pin standing
-  true,   // index 4 Sensor_4 Pin standing
-  true,   // index 5 Sensor_5 Pin standing
-  true,   // index 6 Sensor_6 Pin standing
-  true,   // index 7 Sensor_7 Pin standing
-  true,   // index 8 Sensor_8 Pin standing
-  true    // index 9 Sensor_9 Pin standing
-};
 
+int sensors[10] = {
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  };
 
 
 
@@ -72,48 +72,81 @@ void setup() {
 
   //_____Defining Pinmodes for connected Sensors
   pinMode(Sensor_Round, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_Round), round_over, LOW);
   pinMode(Sensor_1, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_1), clear_sensor_1, LOW);
   pinMode(Sensor_2, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_2), clear_sensor_2, LOW);
   pinMode(Sensor_3, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_3), clear_sensor_3, LOW);
   pinMode(Sensor_4, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_4), clear_sensor_4, LOW);
   pinMode(Sensor_5, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_5), clear_sensor_5, LOW);
   pinMode(Sensor_6, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_6), clear_sensor_6, LOW);
   pinMode(Sensor_7, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_7), clear_sensor_7, LOW);
   pinMode(Sensor_8, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_8), clear_sensor_8, LOW);
   pinMode(Sensor_9, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(Sensor_9), clear_sensor_9, LOW);
 }
 //------------------------------------------------------------------------------------------------------
 
 //----- Arduino Loop Function --------------------------------------------------------------------------
 void loop() {
-if(sensors[0]){
-  Serial.println("  Round is over");
-  Serial.println("  Packing data");
-  DynamicJsonDocument round(1024);
-  JsonArray data = round.createNestedArray("sensors");
-  for (int i = 1; i <= 9; i++) {
-    data.add(sensors[i]);
-  }
-  round["rounds_played"] = rounds_played;
-  round["total_pins_downed"] = pins_played;
-  round["pins_downed"] = pins_downed;
-  Serial.println("  Data is packed");
 
-  Serial.println("  Sending data over MQTT TO: kegeln/bahn");
-  wifi_manager.SEND_MQTT_MESSAGE("Kegelbahn/Kegel", round);
-  Serial.println("  Data has been send");
-  reset_pins_state();
-}
+  wifi_manager.LOOP();
+
+  if(sensors[1] && !digitalRead(Sensor_1)){
+    clear_sensor_1();
+    Serial.println("  Pin 1 Dropped");
+  }
+  if(sensors[2] && !digitalRead(Sensor_2)){
+    clear_sensor_2();
+    Serial.println("  Pin 2 Dropped");
+  }
+  if(sensors[3] && !digitalRead(Sensor_3)){
+    clear_sensor_3();
+    Serial.println("  Pin 3 Dropped");
+  }
+  if(sensors[4] && !digitalRead(Sensor_4)){
+    clear_sensor_4();
+    Serial.println("  Pin 4 Dropped");
+  }
+  if(sensors[5] && !digitalRead(Sensor_5)){
+    clear_sensor_5();
+    Serial.println("  Pin 5 Dropped");
+  }
+  if(sensors[6] && !digitalRead(Sensor_6)){
+    clear_sensor_6();
+    Serial.println("  Pin 6 Dropped");
+  }
+  if(sensors[7] && !digitalRead(Sensor_7)){
+    clear_sensor_7();
+    Serial.println("  Pin 7 Dropped");
+  }
+  if(sensors[8] && !digitalRead(Sensor_8)){
+    clear_sensor_8();
+    Serial.println("  Pin 8 Dropped");
+  }
+  if(sensors[9] && !digitalRead(Sensor_9)){
+    clear_sensor_9();
+    Serial.println("  Pin 9 Dropped");
+  }
+  if(sensors[0] && !digitalRead(Sensor_Round)){
+    Serial.println("  Round is over");
+    Serial.println("  Packing data");
+    DynamicJsonDocument round(1024);
+    JsonArray data = round.createNestedArray("sensors");
+    for (int i = 1; i <= 9; i++) {
+      data.add(sensors[i]);
+    }
+    round["rounds_played"] = rounds_played;
+    round["total_pins_downed"] = pins_played;
+    round["pins_downed"] = pins_downed;
+    Serial.println("  Data is packed");
+
+    Serial.println("  Sending data over MQTT TO: kegeln/bahn");
+    wifi_manager.SEND_MQTT_MESSAGE("Kegelbahn/Kegel", round);
+    Serial.println("  Data has been send");
+    Serial.println("  Resetting Pins");
+    reset_pins_state();
+    Serial.println("  Redrawing Screen");
+    draw_field();
+    Serial.println("  Done! Next round starts now!");
+  }
 
 }
 //------------------------------------------------------------------------------------------------------
@@ -213,10 +246,10 @@ void round_over() {
 
 void reset_pins_state() {
   pins_downed = 0;
-  sensors[0]=false;
-  for (int i = 1; i <= 9; i++) {
+  for(int i=0;i < 10;i++){
     sensors[i] = true;
   }
+  Serial.println("  SensorState Reset");
 }
 
 

@@ -17,6 +17,7 @@ class Wifi_Manager_Class {
 public:
   void SETUP_WIFI_CONNECTION(Lcd_Display_Class* lcd_ini);
   void SETUP_MQTT_CONNECTION(Lcd_Display_Class* lcd_ini);
+  void LOOP();
   String GET_CONNECTION_STATUS();
   PubSubClient GET_MQTT_CLIENT();
   
